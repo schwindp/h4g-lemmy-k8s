@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bootstrap
+  namespace: argocd
+  annotations:
+    kubernetes.io/description: |
+      This is the root "app of apps" that bootstraps this GitOps directory.
+      
+      This Application points here, to its own directory, thereby loading itself, 
+      as well as the Applications for the subdirectories.
+spec:
+  project: default
+  source:
+    repoURL: git@codeberg.org:jlh/lemmies.git
+    targetRevision: HEAD
+    path: 'argo/'
+  destination:
+    name: in-cluster
+    namespace: 'argocd'
+  syncPolicy:
+    automated: {}

@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager-helm
+  namespace: argocd
+  annotations:
+    kubernetes.io/description: |
+      This Application installs cert-manager,
+      which automatically creates and renews Let's Encrypt certificates.
+      
+      This application points to the cert-manager Helm repo.
+      To update cert-manager to a new major or minor release, change the targetRevision tag to a new release tag.
+      https://argo-cd.readthedocs.io/en/stable/user-guide/trackin g_strategies/#helm
+    jlh.name/upstream: https://github.com/cert-manager/cert-manager
+spec:
+  project: default
+  source:
+    chart: cert-manager
+    repoURL: https://charts.jetstack.io
+    targetRevision: 1.12.*
+    helm:
+      releaseName: cert-manager
+      parameters:
+        - name: "installCRDs"
+          value: "true"
+  destination:
+    name: in-cluster
+    namespace: 'cert-manager'
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
